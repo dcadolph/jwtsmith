@@ -30,4 +30,19 @@ var (
 
 	// ErrNotReady is returned when a token is not ready.
 	ErrNotReady = errors.New("not ready")
+
+	// ErrSign is returned when there is an error signing something.
+	ErrSign = errors.New("sign failed")
+
+	// ErrInvalidKeyPair is returned when a public and private key are not valid pairs.
+	ErrInvalidKeyPair = errors.New("invalid key pair")
+
+	// ErrInvalidToken is returned when a token is invalid.
+	ErrInvalidToken = errors.New("invalid token")
+
+	// ErrInvalidMethod is returned when a method is invalid.
+	ErrInvalidMethod = errors.New("invalid method")
+
+	// ErrInvalidSize is returned when there is an invalid size.
+	ErrInvalidSize = errors.New("invalid size")
 )

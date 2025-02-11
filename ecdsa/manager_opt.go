@@ -2,25 +2,38 @@ package ecdsa
 
 import (
 	"github.com/dcadolph/jwtsmith/validation"
+	"github.com/golang-jwt/jwt/v4"
 )
 
-// ManagerOpts is a function type that modifies a managerECDSA.
-type ManagerOpts func(*managerOpts)
+// ManagerOpt is a function type that modifies a managerECDSA.
+type ManagerOpt func(*managerOpt)
 
-type managerOpts struct {
-	signerHeaders map[string]any
-
-	tokenCheckFunc []validation.TokenCheckFunc
+type managerOpt struct {
+	signerHeaders      map[string]any
+	signerStaticClaims jwt.MapClaims
+	tokenCheckFunc     []validation.TokenCheckFunc
 }
 
-func WithTokenCheckFunc(cf ...validation.TokenCheckFunc) ManagerOpts {
-	return func(m *managerOpts) {
+func WithSignerHeaders(signerHeaders map[string]any) ManagerOpt {
+	return func(opt *managerOpt) {
+		opt.signerHeaders = signerHeaders
+	}
+}
+
+func WithSignerStaticClaims(signerStaticClaims jwt.MapClaims) ManagerOpt {
+	return func(opt *managerOpt) {
+		opt.signerStaticClaims = signerStaticClaims
+	}
+}
+
+func WithTokenCheckFunc(cf ...validation.TokenCheckFunc) ManagerOpt {
+	return func(m *managerOpt) {
 		m.tokenCheckFunc = append(m.tokenCheckFunc, cf...)
 	}
 }
 
-func WithTokenCheckFuncExclusive(cf ...validation.TokenCheckFunc) ManagerOpts {
-	return func(m *managerOpts) {
+func WithTokenCheckFuncExclusive(cf ...validation.TokenCheckFunc) ManagerOpt {
+	return func(m *managerOpt) {
 		m.tokenCheckFunc = cf
 	}
 }

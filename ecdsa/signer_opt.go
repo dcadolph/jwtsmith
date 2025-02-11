@@ -4,21 +4,23 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type SignerOpts func(opts *signerOpts)
+type SignerOpt func(opts *signerOpt)
 
-type signerOpts struct {
-	headers      map[string]any
-	staticClaims map[string]any
+type signerOpt struct {
+	staticHeaders map[string]any
+	staticClaims  jwt.MapClaims
 }
 
-func SignerOptsTokenHeaders(headers map[string]any) SignerOpts {
-	return func(opts *signerOpts) {
-		opts.headers = headers
+func SignerOptsTokenStaticHeaders(headers map[string]any) SignerOpt {
+	return func(opts *signerOpt) {
+		opts.staticHeaders = headers
 	}
 }
 
-func SignerOptsStaticClaims() {
-
+func SignerOptsStaticClaims(claims jwt.MapClaims) SignerOpt {
+	return func(opts *signerOpt) {
+		opts.staticClaims = claims
+	}
 }
 
 // TODO: do not allow static claims for iat, exp, nbf...

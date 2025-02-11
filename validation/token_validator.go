@@ -1,4 +1,4 @@
-package jwt
+package validation
 
 import (
 	"crypto/ecdsa"
@@ -10,22 +10,22 @@ import (
 // Break all this out. Basically design phase.
 
 type TokenValidator interface {
-	Validate(token string, checkFunc ...claims.CheckFunc) error
+	Validate(token string, checkFunc ...TokenCheckFunc) error
 }
 
-type TokenValidatorFunc func(token string, checkFunc ...claims.CheckFunc) error
+type TokenValidatorFunc func(token string, checkFunc ...TokenCheckFunc) error
 
-func (f TokenValidatorFunc) Validate(token string, checkFunc ...claims.CheckFunc) error {
+func (f TokenValidatorFunc) Validate(token string, checkFunc ...TokenCheckFunc) error {
 	return f(token, checkFunc...)
 }
 
 type defaultValidator struct {
 	method          jwt.SigningMethod
 	publicKey       *ecdsa.PublicKey
-	staticCheckFunc []claims.CheckFunc
+	staticCheckFunc []TokenCheckFunc
 }
 
-func DefaultValidatorFromPublicKey(method jwt.SigningMethod, publicKey any, staticCheckFunc ...claims.CheckFunc) TokenValidator {
+func DefaultValidatorFromPublicKey(method jwt.SigningMethod, publicKey any, staticCheckFunc ...TokenCheckFunc) TokenValidator {
 
 }
 
@@ -39,5 +39,3 @@ func DefaultValidator(method jwt.SigningMethod, staticCheckFunc ...claims.CheckF
 func (v *defaultValidator) Validate(token string, publicKey string, checkFunc ...claims.CheckFunc) error {
 
 }
-
-type TokenValidatorMiddleware func(TokenValidator) TokenValidator

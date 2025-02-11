@@ -1,6 +1,7 @@
 package ecdsa
 
 import (
+	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	"time"
@@ -37,14 +38,10 @@ const (
 //
 // Headers can be any custom headers. Headers for "alg" and "typ" are ignored, since these are set internally
 // when the token is signed.
-func Signed(method jwt.SigningMethod, signingKey any, headers map[string]any, mapClaims jwt.MapClaims) (string, *jwt.Token, error) { //nolint:lll // Do not want to multi-line.
+func Signed(method jwt.SigningMethod, signingKey *ecdsa.PrivateKey, headers map[string]any, mapClaims jwt.MapClaims) (string, *jwt.Token, error) { //nolint:lll // Do not want to multi-line.
 
 	if method == nil {
 		return "", nil, fmt.Errorf("%w: signing method cannot be nil", ErrInvalidValue)
-	}
-
-	if _, methodErr := SigningMethod(method.Alg()); methodErr != nil {
-		return "", nil, methodErr
 	}
 
 	if signingKey == nil {
@@ -115,40 +112,4 @@ func Signed(method jwt.SigningMethod, signingKey any, headers map[string]any, ma
 	}
 
 	return ss, token, nil
-}
-
-// SigningMethod returns the jwt.SigningMethod for the given method string.
-func SigningMethod(method string) (jwt.SigningMethod, error) { //nolint:ireturn // Want the interface.
-	switch {
-	case method == "":
-		return nil, fmt.Errorf("%w: signing method cannot be empty", ErrInvalidMethod)
-	case method == jwt.SigningMethodES256.Alg():
-		return jwt.SigningMethodES256, nil
-	case method == jwt.SigningMethodES384.Alg():
-		return jwt.SigningMethodES384, nil
-	case method == jwt.SigningMethodES512.Alg():
-		return jwt.SigningMethodES512, nil
-	case method == jwt.SigningMethodRS256.Alg():
-		return jwt.SigningMethodRS256, nil
-	case method == jwt.SigningMethodRS384.Alg():
-		return jwt.SigningMethodRS384, nil
-	case method == jwt.SigningMethodRS512.Alg():
-		return jwt.SigningMethodRS512, nil
-	case method == jwt.SigningMethodPS256.Alg():
-		return jwt.SigningMethodPS256, nil
-	case method == jwt.SigningMethodPS384.Alg():
-		return jwt.SigningMethodPS384, nil
-	case method == jwt.SigningMethodPS512.Alg():
-		return jwt.SigningMethodPS512, nil
-	case method == jwt.SigningMethodHS256.Alg(),
-		method == jwt.SigningMethodHS384.Alg(),
-		method == jwt.SigningMethodHS512.Alg():
-		return nil, fmt.Errorf(
-			"%w: %s: HMAC signing methods are not supported: "+
-				"only PEM encoded asymetric signing methods are supported",
-			ErrInvalidMethod, method,
-		)
-	default:
-		return nil, fmt.Errorf("%w: unsupported signing method: %s", ErrInvalidMethod, method)
-	}
 }

@@ -1,8 +1,9 @@
-package jwt
+package keys
 
 import (
 	"fmt"
 
+	jwt2 "github.com/dcadolph/jwtsmith/jwt"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -13,15 +14,15 @@ import (
 func PublicKeyFunc(method jwt.SigningMethod, key any) (jwt.Keyfunc, error) {
 
 	if method == nil {
-		return nil, fmt.Errorf("%w: method cannot be nil", ErrInvalidValue)
+		return nil, fmt.Errorf("%w: method cannot be nil", jwt2.ErrInvalidValue)
 	}
 
 	if key == nil {
-		return nil, fmt.Errorf("%w: key cannot be nil", ErrInvalidValue)
+		return nil, fmt.Errorf("%w: key cannot be nil", jwt2.ErrInvalidValue)
 	}
 
 	if method.Alg() == "" {
-		return nil, fmt.Errorf("%w: method algorithm cannot be empty string", ErrInvalidValue)
+		return nil, fmt.Errorf("%w: method algorithm cannot be empty string", jwt2.ErrInvalidValue)
 	}
 
 	f := func(token *jwt.Token) (any, error) {
@@ -32,7 +33,7 @@ func PublicKeyFunc(method jwt.SigningMethod, key any) (jwt.Keyfunc, error) {
 		if tokenAlg == "" {
 			return nil, fmt.Errorf(
 				"%w: token method algorithm cannot be empty string: token likely unsigned",
-				ErrInvalidValue,
+				jwt2.ErrInvalidValue,
 			)
 		}
 
@@ -43,7 +44,7 @@ func PublicKeyFunc(method jwt.SigningMethod, key any) (jwt.Keyfunc, error) {
 			if methodAlg != tokenAlg {
 				return nil, fmt.Errorf(
 					"%w: want %s got %s",
-					ErrInvalidSigningMethod, methodAlg, tokenAlg,
+					jwt2.ErrInvalidSigningMethod, methodAlg, tokenAlg,
 				)
 			}
 			return key, nil
@@ -51,7 +52,7 @@ func PublicKeyFunc(method jwt.SigningMethod, key any) (jwt.Keyfunc, error) {
 		default:
 			return nil, fmt.Errorf(
 				"%w: invalid signing method: %v: expected ECDSA, RSA, or RSAPSS",
-				ErrInvalidSigningMethod, token.Method,
+				jwt2.ErrInvalidSigningMethod, token.Method,
 			)
 		}
 	}
